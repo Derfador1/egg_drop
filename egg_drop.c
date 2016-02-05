@@ -57,12 +57,11 @@ int main(int argc, char *argv[])
 				guess = 1;
 			}
 			else if(eggs >= 2) {
-				//printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
 				if (guess != prev_guess) {
 					step = pick_floor(guess - prev_guess);
 					guess = prev_guess;
 					guess+=step;
-					//printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
+
 					if((guess - prev_guess) == 1) {
 						eggs = 0;
 						break;
@@ -70,18 +69,24 @@ int main(int argc, char *argv[])
 				}
 			}
 			else {
-				guess = prev_guess + 1;
-				prev_guess = guess - 1;
+				printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
+				guess = prev_guess;
+				guess++;
+				printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
 				if((guess - prev_guess) == 1) {
+					printf("ew\n");
 					eggs = 0;
 					break;
 				}
+
+
 			}
 
 		}
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
 			if(eggs != 1) {
+				printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
 				prev_guess = guess;
 				if(--step < 1) {
 					step = 1; 
@@ -89,6 +94,7 @@ int main(int argc, char *argv[])
 				guess+=step;
 			}
 			else if(eggs == 1) {
+				printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
 				guess++;
 				prev_guess = guess - 1;
 			}
