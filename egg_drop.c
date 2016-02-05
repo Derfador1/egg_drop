@@ -85,17 +85,26 @@ bool searcher(double floors, int eggs, egg **carton)
 {
 	//seperate into there own functions
 	if(eggs > log(floors)) {
+		printf("Binary search\n");
 		size_t guess = floors/2;
 		size_t last_good_floor = 0;
 		size_t step = 0;
 		int total_count = 0;
-		//int limit;
+		int limit = 0;
 
 		if(eggs == 1) {
 			guess = 1;
 		}
 
-		while(eggs >= 1) {
+
+		while(eggs != 0) {
+
+			if(guess > floors) {
+				printf("Limit is to great\n");
+				limit = 1;
+				break;
+			}
+
 			egg_drop_from_floor(carton[eggs - 1], guess);
 			step = guess - last_good_floor;
 			if(step < 2) {
@@ -106,6 +115,11 @@ bool searcher(double floors, int eggs, egg **carton)
 				printf("EGG CRACKED at floor %ld\n", guess);
 				eggs--;
 				guess = last_good_floor + (step/2);
+
+				if(eggs == 0) {
+					printf("There is no safe floor\n");
+					return true;
+				}
 
 				if((guess - last_good_floor) == 1) {
 					break;
@@ -119,11 +133,18 @@ bool searcher(double floors, int eggs, egg **carton)
 
 			total_count++;
 		}
-		printf("%zd is the maximum safe floor, found after %d drops\n", last_good_floor, total_count);
+
+		if(limit == 0) {
+			printf("%zd is the maximum safe floor, found after %d drops\n", last_good_floor, total_count);
+		}
+		else {
+			printf("Your at the end of the building, your max safe drop is %zd\n", last_good_floor);
+		}
 
 		return true;
 	}
 	else {
+		printf("Quadratic search\n");
 		size_t step = pick_floor(floors);
 
 		if(eggs == 1) {
@@ -149,6 +170,11 @@ bool searcher(double floors, int eggs, egg **carton)
 			if(egg_is_broken(carton[eggs - 1])) {
 				printf("EGG CRACKED at floor %ld\n", guess);
 				eggs--;
+
+				if(eggs == 0) {
+					printf("There is no safe floor\n");
+					return true;
+				}
 
 				if(guess - last_good_floor == 1) {
 					break;
