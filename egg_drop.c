@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	int eggs_counter = 0;
 
 	if(argc != 3) {
-		printf("To few arguments\n");
+		fprintf(stderr, "To few arguments\n");
 		return 0;
 	}
 	else if(argc == 3) {
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 			printf("Number of eggs %d\n", eggs);
 		}
 		else {
-			printf("Error\n");
+			fprintf(stderr, "Error\n");
 			exit(1);
 		}
 	}
@@ -48,9 +48,16 @@ int main(int argc, char *argv[])
 	size_t guess = 0;
 	size_t last_good_floor = 0;
 	int total_count = 0;
+	int limit = 0;
 
 	while(eggs >= 1) {
 		guess += step;
+
+		if(guess > floors) {
+			printf("Limit is to great\n");
+			limit = 1;
+			break;
+		}
 		
 		egg_drop_from_floor(carton[eggs - 1], guess);
 
@@ -59,7 +66,6 @@ int main(int argc, char *argv[])
 			eggs--;
 
 			if(guess - last_good_floor == 1) {
-				printf("here\n");
 				break;
 			}
 
@@ -84,8 +90,12 @@ int main(int argc, char *argv[])
 		total_count++;
 	}
 
-	//if statement to check for if eggs were 0
-	printf("%zd is the maximum safe floor, found after %d drops\n", last_good_floor, total_count);
+	if(limit == 0) {
+		printf("%zd is the maximum safe floor, found after %d drops\n", last_good_floor, total_count);
+	}
+	else {
+		printf("I can not give you a safe dropping floor limit\n");
+	}
 	/*
 	drop from 50 
 	if egg doesnt break drop from 75 
