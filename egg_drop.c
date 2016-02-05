@@ -50,9 +50,13 @@ int main(int argc, char *argv[])
 			if(total_count == 0) {
 				guess = 1;
 			}
-			else if(eggs == 1) {
-				guess = prev_guess + 1;
-				//printf("guess here %zd\n", guess);
+			else if(eggs >= 2) {
+				//printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
+				if (guess != prev_guess) {
+					step = pick_floor(guess - prev_guess);
+					guess = prev_guess + 1;
+					guess+=step;
+				}
 			}
 		}
 		else {
