@@ -39,8 +39,11 @@ int main(int argc, char *argv[])
 	for (counter = 0; counter < eggs; counter++) {
 		carton[counter] = lay_egg();
 	}
-
 	size_t step = pick_floor(floors);
+
+	if(eggs == 1) {
+		step = 1;
+	}
 
 	size_t guess = 0;
 	size_t last_good_floor = 0;
