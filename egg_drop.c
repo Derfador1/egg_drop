@@ -58,6 +58,10 @@ int main(int argc, char *argv[])
 					guess+=step;
 				}
 			}
+			else {
+				guess = prev_guess + 1;
+				//prev_guess = guess;
+			}
 		}
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
@@ -68,15 +72,14 @@ int main(int argc, char *argv[])
 			}
 			else if(eggs == 1) {
 				guess++;
+				prev_guess = guess - 1;
 			}
-			//guess = pick_floor(guess);
 		}
 
 		total_count++;
 	}
 
 	printf("%zd is the maximum safe floor, found after %d drops\n", guess-1, total_count);
-
 	/*
 	drop from 50 
 	if egg doesnt break drop from 75 
