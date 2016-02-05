@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
 {
 	double floors = 0;
 	int eggs = 0;
+	int eggs_counter = 0;
 
 	if(argc != 3) {
 		printf("To few arguments\n");
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
 		if(check_isdigit(argv[1], argv[2])) {
 			floors = strtod(argv[1], NULL); 
 			eggs = strtol(argv[2], NULL, 10);
+			eggs_counter = eggs;
 			printf("Number of floors %lf\n", floors);
 			printf("Number of eggs %d\n", eggs);
 		}
@@ -38,14 +40,14 @@ int main(int argc, char *argv[])
 		carton[counter] = lay_egg();
 	}
 
-	size_t guess = pick_floor(floors) + 1;
-	size_t step = guess; //should be 14
-	size_t prev_guess = guess;
+	size_t step = pick_floor(floors);
+
+	size_t guess = 0;
+	size_t last_good_floor = 0;
 	int total_count = 0;
 
 	while(eggs >= 1) {
-
-		//printf("guess : %zd\n", guess);
+		guess += step;
 		
 		egg_drop_from_floor(carton[eggs - 1], guess);
 
@@ -53,48 +55,34 @@ int main(int argc, char *argv[])
 			printf("EGG CRACKED at floor %ld\n", guess);
 			eggs--;
 
-			if(total_count == 0) {
-				guess = 1;
+			if(guess - last_good_floor == 1) {
+				printf("here\n");
+				break;
 			}
-			else if(eggs >= 2) {
-				if (guess != prev_guess) {
-					step = pick_floor(guess - prev_guess);
-					guess = prev_guess;
-					guess+=step;
 
-					if((guess - prev_guess) == 1) {
-						eggs = 0;
-						break;
-					}
-				}
+			if(eggs == 1) {
+				step = 1;
 			}
 			else {
-				guess = prev_guess;
-				guess++;
+				step = pick_floor(guess - last_good_floor);
 			}
+
+			guess = last_good_floor;
 
 		}
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
-			if(eggs != 1) {
-				prev_guess = guess;
-				if(--step < 1) {
-					step = 1; 
-				}
-				guess+=step;
+			last_good_floor = guess;
+			if(step > 1) {
+				--step;
 			}
-			else if(eggs == 1) {
-				guess++;
-				prev_guess = guess - 1;
-			}
-			//printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
 		}
 
 		total_count++;
 	}
 
 	//if statement to check for if eggs were 0
-	printf("%zd is the maximum safe floor, found after %d drops\n", guess - 1, total_count);
+	printf("%zd is the maximum safe floor, found after %d drops\n", last_good_floor, total_count);
 	/*
 	drop from 50 
 	if egg doesnt break drop from 75 
@@ -103,7 +91,7 @@ int main(int argc, char *argv[])
 	*/
 
 	//free error here
-	for (counter = 0; counter < eggs; counter++) {
+	for (counter = eggs_counter - 1; counter >= 0; --counter) {
 		cook_egg(carton[counter]);
 	}
 	
@@ -118,7 +106,7 @@ size_t pick_floor(double floor)
 	double c = -floor;
 
 	double guess = (-b+sqrt(pow(b, 2) - 4 * a * c)) / (2 * a);
-	return guess;
+	return ceil(guess);
 }
 
 bool check_isdigit(char *floors, char *eggs)
