@@ -31,7 +31,9 @@ int main(int argc, char *argv[])
 		carton[counter] = lay_egg();
 	}
 
-	size_t guess = pick_floor(eggs, floors);
+	size_t guess = floors/2;
+	size_t prev_guess = guess;
+	int total_count = 0;
 
 	while(eggs != 0) {
 		printf("guess: %zd\n", guess);
@@ -41,13 +43,33 @@ int main(int argc, char *argv[])
 		if(egg_is_broken(carton[eggs - 1])) {
 			printf("EGG CRACKED at floor %ld\n", guess);
 			eggs--;
+
+			if(total_count == 0) {
+				guess = 1;
+			}
+			else if(eggs == 1) {
+				printf("here\n");
+				guess = prev_guess;
+				//ss = pick_floor(eggs, guess);
+			}
 		}
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
+			guess = pick_floor(eggs, guess);
 		}
 
-		guess = pick_floor(eggs, guess);
+
+		total_count++;
 	}
+
+	printf("%zd is the maximum safe floor, found after %d drops\n", guess-1, total_count);
+
+	/*
+	drop from 50 
+	if egg doesnt break drop from 75 
+	set egg to 50 and increment by 1
+	if it does break then set egg drop to 1 and begin counting up
+	*/
 
 	//free error here
 	for (counter = 0; counter < eggs; counter++) {
@@ -63,6 +85,10 @@ size_t pick_floor(int eggs, int floor)
 	if(eggs == 1) {
 		printf("floor %d\n", floor);
 		return ++floor;
+	}
+	else if (eggs > 1) {
+		printf("floor %d\n", floor + floor/2);
+		return (floor + floor/2);
 	}
 	else {
 		printf("result %d\n", floor/2);
