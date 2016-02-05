@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 size_t pick_floor(double floor);
 bool check_isdigit(char *floors, char *eggs);
@@ -86,7 +87,7 @@ bool searcher(double floors, int eggs, egg **carton)
 	if(eggs > log(floors)) {
 		size_t guess = floors/2;
 		size_t last_good_floor = 0;
-		size_t step = guess - last_good_floor;
+		size_t step = 0;
 		int total_count = 0;
 		//int limit;
 
@@ -96,12 +97,19 @@ bool searcher(double floors, int eggs, egg **carton)
 
 		while(eggs >= 1) {
 			egg_drop_from_floor(carton[eggs - 1], guess);
-			printf("guess : %zd prev_guess : %zd\n", guess, last_good_floor);
 			step = guess - last_good_floor;
+			if(step < 2) {
+				step = 2;
+			}
+
 			if(egg_is_broken(carton[eggs - 1])) {
 				printf("EGG CRACKED at floor %ld\n", guess);
 				eggs--;
 				guess = last_good_floor + (step/2);
+
+				if((guess - last_good_floor) == 1) {
+					break;
+				}
 			}
 			else {
 				printf("EGG SURVIVED at floor %ld\n", guess);
