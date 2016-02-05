@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 
 size_t pick_floor(double floor);
+bool check_isdigit(char *floors, char *eggs);
 
 int main(int argc, char *argv[])
 {
@@ -16,12 +18,16 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	else if(argc == 3) {
-	//else if(check_isdigit(char *argv[1], char *argv[2]))
-		printf("%d\n", argc);
-		floors = strtod(argv[1], NULL); 
-		eggs = strtol(argv[2], NULL, 10);
-		printf("Number of floors %lf\n", floors);
-		printf("Number of eggs %d\n", eggs);
+		if(check_isdigit(argv[1], argv[2])) {
+			floors = strtod(argv[1], NULL); 
+			eggs = strtol(argv[2], NULL, 10);
+			printf("Number of floors %lf\n", floors);
+			printf("Number of eggs %d\n", eggs);
+		}
+		else {
+			printf("Error\n");
+			exit(1);
+		}
 	}
 
 
@@ -37,7 +43,7 @@ int main(int argc, char *argv[])
 	size_t prev_guess = guess;
 	int total_count = 0;
 
-	while(eggs != 0) {
+	while(eggs >= 1) {
 
 		//printf("guess : %zd\n", guess);
 		
@@ -58,13 +64,18 @@ int main(int argc, char *argv[])
 					guess+=step;
 					//printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
 					if((guess - prev_guess) == 1) {
+						eggs = 0;
 						break;
 					}
 				}
 			}
 			else {
 				guess = prev_guess + 1;
-				prev_guess = guess;
+				prev_guess = guess - 1;
+				if((guess - prev_guess) == 1) {
+					eggs = 0;
+					break;
+				}
 			}
 
 		}
@@ -72,18 +83,22 @@ int main(int argc, char *argv[])
 			printf("EGG SURVIVED at floor %ld\n", guess);
 			if(eggs != 1) {
 				prev_guess = guess;
-				step--;
+				if(--step < 1) {
+					step = 1; 
+				}
 				guess+=step;
 			}
 			else if(eggs == 1) {
 				guess++;
 				prev_guess = guess - 1;
 			}
+			//printf("guess : %zd prev_guess : %zd\n", guess, prev_guess);
 		}
 
 		total_count++;
 	}
 
+	//if statement to check for if eggs were 0
 	printf("%zd is the maximum safe floor, found after %d drops\n", guess - 1, total_count);
 	/*
 	drop from 50 
@@ -97,7 +112,7 @@ int main(int argc, char *argv[])
 		cook_egg(carton[counter]);
 	}
 	
-	free(*carton);
+	free(carton);
 	//only frees everything if make debug is called
 }
 
@@ -109,4 +124,19 @@ size_t pick_floor(double floor)
 
 	double guess = (-b+sqrt(pow(b, 2) - 4 * a * c)) / (2 * a);
 	return guess;
+}
+
+bool check_isdigit(char *floors, char *eggs)
+{
+	if(!isdigit(*floors)) {
+		printf("Your arguments are invalid\n");
+		return false;
+	}
+	else if (!isdigit(*eggs)) {
+		printf("Your arguments are invalid\n");
+		return false;
+	}
+	else {
+		return true;
+	}
 }
