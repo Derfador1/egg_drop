@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
 	}
 
 
-	//if(floors <= .001 || eggs == 0) {
-	//	fprintf(stderr, "One of the given inputs was not a valid number for this trial\n");
-	//	exit(1);
-	//}
+	if(floors <= .001 || eggs == 0) {
+		fprintf(stderr, "One of the given inputs was not a valid number for this trial\n");
+		exit(1);
+	}
 
 	int counter = 0;
 	egg **carton = malloc(sizeof(*carton) * eggs);
