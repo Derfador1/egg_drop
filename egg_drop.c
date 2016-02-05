@@ -7,7 +7,7 @@ size_t pick_floor(int eggs, int floor);
 
 int main(int argc, char *argv[])
 {
-	int floors = 0;
+	size_t floors = 0;
 	int eggs = 0;
 
 	if(argc != 3) {
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 		printf("%d\n", argc);
 		floors = (int)strtod(argv[1], NULL); 
 		eggs = strtol(argv[2], NULL, 10);
-		printf("Number of floors %d\n", floors);
+		printf("Number of floors %zd\n", floors);
 		printf("Number of eggs %d\n", eggs);
 	}
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	while(eggs != 0) {
 
 
-		if(guess >= 100) {
+		if(guess >= floors) {
 			guess = floors;
 		}
 		
