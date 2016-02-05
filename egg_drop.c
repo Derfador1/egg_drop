@@ -2,12 +2,13 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
-size_t pick_floor(int eggs, int floor);
+size_t pick_floor(double floor);
 
 int main(int argc, char *argv[])
 {
-	size_t floors = 0;
+	double floors = 0;
 	int eggs = 0;
 
 	if(argc != 3) {
@@ -17,9 +18,9 @@ int main(int argc, char *argv[])
 	else if(argc == 3) {
 	//else if(check_isdigit(char *argv[1], char *argv[2]))
 		printf("%d\n", argc);
-		floors = (int)strtod(argv[1], NULL); 
+		floors = strtod(argv[1], NULL); 
 		eggs = strtol(argv[2], NULL, 10);
-		printf("Number of floors %zd\n", floors);
+		printf("Number of floors %lf\n", floors);
 		printf("Number of eggs %d\n", eggs);
 	}
 
@@ -31,16 +32,14 @@ int main(int argc, char *argv[])
 		carton[counter] = lay_egg();
 	}
 
-	size_t guess = floors/2;
+	size_t guess = pick_floor(floors) + 1;
+	size_t step = guess; //should be 14
 	size_t prev_guess = guess;
 	int total_count = 0;
 
 	while(eggs != 0) {
 
-
-		if(guess >= floors) {
-			guess = floors;
-		}
+		//printf("guess : %zd\n", guess);
 		
 		egg_drop_from_floor(carton[eggs - 1], guess);
 
@@ -53,15 +52,21 @@ int main(int argc, char *argv[])
 			}
 			else if(eggs == 1) {
 				guess = prev_guess + 1;
+				//printf("guess here %zd\n", guess);
 			}
 		}
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
-			prev_guess = guess;
-			guess = pick_floor(eggs, guess);
+			if(eggs != 1) {
+				prev_guess = guess;
+				step--;
+				guess+=step;
+			}
+			else if(eggs == 1) {
+				guess++;
+			}
+			//guess = pick_floor(guess);
 		}
-
-
 
 		total_count++;
 	}
@@ -84,15 +89,12 @@ int main(int argc, char *argv[])
 	//only frees everything if make debug is called
 }
 
-size_t pick_floor(int eggs, int floor)
+size_t pick_floor(double floor)
 {
-	if(eggs == 1) {
-		return ++floor;
-	}
-	else if (eggs > 1) {
-		return (floor + floor/2);
-	}
-	else {
-		return (floor/2);	
-	}
+	double a = 0.5;
+	double b = 0.5;
+	double c = -floor;
+
+	double guess = (-b+sqrt(pow(b, 2) - 4 * a * c)) / (2 * a);
+	return guess;
 }
