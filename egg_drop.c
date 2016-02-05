@@ -21,4 +21,18 @@ int main(int argc, char *argv[])
 		printf("Number of eggs %d\n", eggs);
 	}
 
+
+	int counter = 0;
+	egg **carton = malloc(sizeof(*carton) * eggs);
+
+	for (counter = 0; counter < eggs; counter++) {
+		carton[counter] = lay_egg();
+	}
+
+	for (counter = 0; counter < eggs; counter++) {
+		cook_egg(carton[counter]);
+	}
+	
+	free(carton);
+	//only frees everything if make debug is called
 }
