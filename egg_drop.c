@@ -56,6 +56,9 @@ int main(int argc, char *argv[])
 					step = pick_floor(guess - prev_guess);
 					guess = prev_guess + 1;
 					guess+=step;
+					if (egg_is_broken(carton[eggs-1])) {
+						break;
+					}
 				}
 			}
 			else {
