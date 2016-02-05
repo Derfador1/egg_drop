@@ -82,9 +82,11 @@ bool check_isdigit(char *floors, char *eggs)
 
 bool searcher(double floors, int eggs, egg **carton)
 {
+	//seperate into there own functions
 	if(eggs > log(floors)) {
 		size_t guess = floors/2;
-		size_t last_good_floor = guess;
+		size_t last_good_floor = 0;
+		size_t step = guess - last_good_floor;
 		int total_count = 0;
 		//int limit;
 
@@ -94,28 +96,17 @@ bool searcher(double floors, int eggs, egg **carton)
 
 		while(eggs >= 1) {
 			egg_drop_from_floor(carton[eggs - 1], guess);
-
+			printf("guess : %zd prev_guess : %zd\n", guess, last_good_floor);
+			step = guess - last_good_floor;
 			if(egg_is_broken(carton[eggs - 1])) {
 				printf("EGG CRACKED at floor %ld\n", guess);
 				eggs--;
-
-				//if(guess - last_good_floor == 1) {
-				//	break;
-				//}	
-				printf("guess : %zd prev_guess : %zd\n", guess, last_good_floor);
-				if(eggs == 1) {
-					guess = last_good_floor + 1;
-					//guess++;
-				}
-				else {
-
-				}
-
+				guess = last_good_floor + (step/2);
 			}
 			else {
 				printf("EGG SURVIVED at floor %ld\n", guess);
 				last_good_floor = guess;
-				guess = binary_picker(eggs, guess);
+				guess = guess + (step/2);
 			}
 
 			total_count++;
@@ -184,16 +175,5 @@ bool searcher(double floors, int eggs, egg **carton)
 		}
 
 		return true;
-	}
-}
-
-
-size_t binary_picker(int eggs, int floor)
-{
-	if(eggs == 1) {
-		return ++floor;
-	}
-	else {
-		return (floor + floor/2);
 	}
 }
