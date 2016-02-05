@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	//else if(check_isdigit(char *argv[1], char *argv[2]))
 		printf("%d\n", argc);
 		floors = (int)strtod(argv[1], NULL); 
-		eggs = (int)strtod(argv[2], NULL);
+		eggs = strtol(argv[2], NULL, 10);
 		printf("Number of floors %d\n", floors);
 		printf("Number of eggs %d\n", eggs);
 	}
@@ -36,7 +36,11 @@ int main(int argc, char *argv[])
 	int total_count = 0;
 
 	while(eggs != 0) {
-		printf("guess: %zd\n", guess);
+
+
+		if(guess >= 100) {
+			guess = floors;
+		}
 		
 		egg_drop_from_floor(carton[eggs - 1], guess);
 
@@ -48,15 +52,15 @@ int main(int argc, char *argv[])
 				guess = 1;
 			}
 			else if(eggs == 1) {
-				printf("here\n");
-				guess = prev_guess;
-				//ss = pick_floor(eggs, guess);
+				guess = prev_guess + 1;
 			}
 		}
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
+			prev_guess = guess;
 			guess = pick_floor(eggs, guess);
 		}
+
 
 
 		total_count++;
@@ -83,15 +87,12 @@ int main(int argc, char *argv[])
 size_t pick_floor(int eggs, int floor)
 {
 	if(eggs == 1) {
-		printf("floor %d\n", floor);
 		return ++floor;
 	}
 	else if (eggs > 1) {
-		printf("floor %d\n", floor + floor/2);
 		return (floor + floor/2);
 	}
 	else {
-		printf("result %d\n", floor/2);
 		return (floor/2);	
 	}
 }
