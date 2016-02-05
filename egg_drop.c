@@ -7,6 +7,8 @@
 
 size_t pick_floor(double floor);
 bool check_isdigit(char *floors, char *eggs);
+bool searcher(double floors, int eggs, egg **carton);
+size_t binary_picker(int eggs, int floor);
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +25,7 @@ int main(int argc, char *argv[])
 			floors = strtod(argv[1], NULL); 
 			eggs = strtol(argv[2], NULL, 10);
 			eggs_counter = eggs;
-			printf("Number of floors %lf\n", floors);
+			printf("Number of floors %.0lf\n", floors);
 			printf("Number of eggs %d\n", eggs);
 		}
 		else {
@@ -32,84 +34,25 @@ int main(int argc, char *argv[])
 		}
 	}
 
-
 	int counter = 0;
 	egg **carton = malloc(sizeof(*carton) * eggs);
 
 	for (counter = 0; counter < eggs; counter++) {
 		carton[counter] = lay_egg();
 	}
-	size_t step = pick_floor(floors);
 
-	if(eggs == 1) {
-		step = 1;
-	}
-
-	size_t guess = 0;
-	size_t last_good_floor = 0;
-	int total_count = 0;
-	int limit = 0;
-
-	while(eggs >= 1) {
-		guess += step;
-
-		if(guess > floors) {
-			printf("Limit is to great\n");
-			limit = 1;
-			break;
-		}
-		
-		egg_drop_from_floor(carton[eggs - 1], guess);
-
-		if(egg_is_broken(carton[eggs - 1])) {
-			printf("EGG CRACKED at floor %ld\n", guess);
-			eggs--;
-
-			if(guess - last_good_floor == 1) {
-				break;
-			}
-
-			if(eggs == 1) {
-				step = 1;
-			}
-			else {
-				step = pick_floor(guess - last_good_floor);
-			}
-
-			guess = last_good_floor;
-
-		}
-		else {
-			printf("EGG SURVIVED at floor %ld\n", guess);
-			last_good_floor = guess;
-			if(step > 1) {
-				--step;
-			}
-		}
-
-		total_count++;
-	}
-
-	if(limit == 0) {
-		printf("%zd is the maximum safe floor, found after %d drops\n", last_good_floor, total_count);
+	if(!searcher(floors, eggs, carton)) {
+		printf("ouch error\n");
 	}
 	else {
-		printf("I can not give you a safe dropping floor limit\n");
+		printf("complete\n");
 	}
-	/*
-	drop from 50 
-	if egg doesnt break drop from 75 
-	set egg to 50 and increment by 1
-	if it does break then set egg drop to 1 and begin counting up
-	*/
 
-	//free error here
 	for (counter = eggs_counter - 1; counter >= 0; --counter) {
 		cook_egg(carton[counter]);
 	}
 	
 	free(carton);
-	//only frees everything if make debug is called
 }
 
 size_t pick_floor(double floor)
@@ -134,5 +77,123 @@ bool check_isdigit(char *floors, char *eggs)
 	}
 	else {
 		return true;
+	}
+}
+
+bool searcher(double floors, int eggs, egg **carton)
+{
+	if(eggs > log(floors)) {
+		size_t guess = floors/2;
+		size_t last_good_floor = guess;
+		int total_count = 0;
+		//int limit;
+
+		if(eggs == 1) {
+			guess = 1;
+		}
+
+		while(eggs >= 1) {
+			egg_drop_from_floor(carton[eggs - 1], guess);
+
+			if(egg_is_broken(carton[eggs - 1])) {
+				printf("EGG CRACKED at floor %ld\n", guess);
+				eggs--;
+
+				//if(guess - last_good_floor == 1) {
+				//	break;
+				//}	
+				printf("guess : %zd prev_guess : %zd\n", guess, last_good_floor);
+				if(eggs == 1) {
+					guess = last_good_floor + 1;
+					//guess++;
+				}
+				else {
+
+				}
+
+			}
+			else {
+				printf("EGG SURVIVED at floor %ld\n", guess);
+				last_good_floor = guess;
+				guess = binary_picker(eggs, guess);
+			}
+
+			total_count++;
+		}
+		printf("%zd is the maximum safe floor, found after %d drops\n", last_good_floor, total_count);
+
+		return true;
+	}
+	else {
+		size_t step = pick_floor(floors);
+
+		if(eggs == 1) {
+			step = 1;
+		}
+
+		size_t guess = 0;
+		size_t last_good_floor = 0;
+		int total_count = 0;
+		int limit = 0;
+
+		while(eggs >= 1) {
+			guess += step;
+
+			if(guess > floors) {
+				printf("Limit is to great\n");
+				limit = 1;
+				break;
+			}
+		
+			egg_drop_from_floor(carton[eggs - 1], guess);
+
+			if(egg_is_broken(carton[eggs - 1])) {
+				printf("EGG CRACKED at floor %ld\n", guess);
+				eggs--;
+
+				if(guess - last_good_floor == 1) {
+					break;
+				}
+
+				if(eggs == 1) {
+					step = 1;
+				}
+				else {
+					step = pick_floor(guess - last_good_floor);
+				}
+
+				guess = last_good_floor;
+
+			}
+			else {
+				printf("EGG SURVIVED at floor %ld\n", guess);
+				last_good_floor = guess;
+				if(step > 1) {
+					--step;
+				}
+			}
+
+			total_count++;
+		}
+
+		if(limit == 0) {
+			printf("%zd is the maximum safe floor, found after %d drops\n", last_good_floor, total_count);
+		}
+		else {
+			printf("I can not give you a safe dropping floor limit\n");
+		}
+
+		return true;
+	}
+}
+
+
+size_t binary_picker(int eggs, int floor)
+{
+	if(eggs == 1) {
+		return ++floor;
+	}
+	else {
+		return (floor + floor/2);
 	}
 }
