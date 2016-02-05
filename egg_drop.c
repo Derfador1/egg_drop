@@ -35,6 +35,12 @@ int main(int argc, char *argv[])
 		}
 	}
 
+
+	//if(floors <= .001 || eggs == 0) {
+	//	fprintf(stderr, "One of the given inputs was not a valid number for this trial\n");
+	//	exit(1);
+	//}
+
 	int counter = 0;
 	egg **carton = malloc(sizeof(*carton) * eggs);
 
@@ -42,7 +48,7 @@ int main(int argc, char *argv[])
 		carton[counter] = lay_egg();
 	}
 
-	if(eggs > log(floors)) {
+	if(eggs > log2(floors)) {
 		binary_search(floors, eggs, carton);
 	}
 	else {
@@ -110,10 +116,7 @@ bool quadratic_search(double floors, int eggs, egg **carton)
 			printf("EGG CRACKED at floor %ld\n", guess);
 			eggs--;
 
-			if(eggs == 0) {
-				printf("There is no safe floor\n");
-				return true;
-			}
+
 
 			if(guess - last_good_floor == 1) {
 				break;
@@ -124,6 +127,11 @@ bool quadratic_search(double floors, int eggs, egg **carton)
 			}
 			else {
 				step = pick_floor(guess - last_good_floor);
+			}
+
+			if(eggs == 0) {
+				printf("There is no safe floor\n");
+				return true;
 			}
 
 			guess = last_good_floor;
@@ -174,8 +182,6 @@ bool binary_search(double floors, int eggs, egg **carton)
 			break;
 		}
 
-		//printf("here\n");
-
 		egg_drop_from_floor(carton[eggs - 1], guess);
 		step = guess - last_good_floor;
 		if(step < 2) {
@@ -185,14 +191,17 @@ bool binary_search(double floors, int eggs, egg **carton)
 		if(egg_is_broken(carton[eggs - 1])) {
 			printf("EGG CRACKED at floor %ld\n", guess);
 			eggs--;
-			guess = last_good_floor + (step/2);
-			printf("eggs : %d\n", eggs);
+			size_t tmp = last_good_floor + (step/2);
 
-			printf("%zd\n", guess - last_good_floor);
-			if((guess - last_good_floor) == 1 || eggs == 0) {
-				printf("fudge you\n");
-				return true;
+			if(tmp == guess) {
+				printf("You passed your limit\n");
+				break;
 			}
+			else {
+				guess = tmp;
+			}
+
+
 		}
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
