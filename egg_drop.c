@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
 	}
 	else if(argc == 3) {
 		if(check_isdigit(argv[1], argv[2])) {
-			floors = strtod(argv[1], NULL); 
-			eggs = strtol(argv[2], NULL, 10);
+			floors = strtod(argv[1], NULL); //sets floors equal to the double of the input str
+			eggs = strtol(argv[2], NULL, 10); //sets eggs equal to the long of the input eggs
 			eggs_counter = eggs;
 			printf("Number of floors %.0lf\n", floors);
 			printf("Number of eggs %d\n", eggs);
@@ -36,26 +36,26 @@ int main(int argc, char *argv[])
 	}
 
 
-	if(floors <= .001 || eggs == 0) {
+	if(floors < .001 || eggs == 0) { //allows me to check floors which are floating point and eggs
 		fprintf(stderr, "One of the given inputs was not a valid number for this trial\n");
 		exit(1);
 	}
 
 	int counter = 0;
-	egg **carton = malloc(sizeof(*carton) * eggs);
+	egg **carton = malloc(sizeof(*carton) * eggs); //malloc my carton of eggs
 
 	for (counter = 0; counter < eggs; counter++) {
-		carton[counter] = lay_egg();
+		carton[counter] = lay_egg(); //fills carton with eggs 
 	}
 
-	if(eggs > log2(floors)) {
+	if(eggs > log2(floors)) { //use this check to see if number of eggs would benefit from quadratic or binary searching
 		binary_search(floors, eggs, carton);
 	}
 	else {
 		quadratic_search(floors, eggs, carton);
 	}
 
-	for (counter = eggs_counter - 1; counter >= 0; --counter) {
+	for (counter = eggs_counter - 1; counter >= 0; --counter) { //frees eggs backwards
 		cook_egg(carton[counter]);
 	}
 	
@@ -68,11 +68,11 @@ size_t pick_floor(double floor)
 	double b = 0.5;
 	double c = -floor;
 
-	double guess = (-b+sqrt(pow(b, 2) - 4 * a * c)) / (2 * a);
+	double guess = (-b+sqrt(pow(b, 2) - 4 * a * c)) / (2 * a); //quadratic math equation used to determine best floor choice
 	return ceil(guess);
 }
 
-bool check_isdigit(char *floors, char *eggs)
+bool check_isdigit(char *floors, char *eggs) //checks eggs and floors to make sure they are digits
 {
 	if(!isdigit(*floors)) {
 		printf("Your arguments are invalid\n");
@@ -104,15 +104,15 @@ bool quadratic_search(double floors, int eggs, egg **carton)
 	while(eggs >= 1) {
 		guess += step;
 
-		if(guess > floors) {
+		if(guess > floors) { //checks if the guess is trying to go higher then given floors
 			printf("Limit is to great\n");
 			limit = 1;
 			break;
 		}
 	
-		egg_drop_from_floor(carton[eggs - 1], guess);
+		egg_drop_from_floor(carton[eggs - 1], guess); //drops an egg from guess height
 
-		if(egg_is_broken(carton[eggs - 1])) {
+		if(egg_is_broken(carton[eggs - 1])) { //checks if the egg broke 
 			printf("EGG CRACKED at floor %ld\n", guess);
 			eggs--;
 
@@ -126,7 +126,7 @@ bool quadratic_search(double floors, int eggs, egg **carton)
 				step = 1;
 			}
 			else {
-				step = pick_floor(guess - last_good_floor);
+				step = pick_floor(guess - last_good_floor); //reset step based on current guess - last good guess
 			}
 
 			if(eggs == 0) {
@@ -140,7 +140,7 @@ bool quadratic_search(double floors, int eggs, egg **carton)
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
 			last_good_floor = guess;
-			if(step > 1) {
+			if(step > 1) { //make sure step wont gow lower then 1
 				--step;
 			}
 		}
@@ -160,8 +160,6 @@ bool quadratic_search(double floors, int eggs, egg **carton)
 
 bool binary_search(double floors, int eggs, egg **carton)
 {
-	//seperate into there own functions
-	//if(eggs > log(floors)) {
 	printf("Binary search\n");
 	size_t guess = floors/2;
 	size_t last_good_floor = 0;
@@ -176,28 +174,28 @@ bool binary_search(double floors, int eggs, egg **carton)
 
 	while(eggs >= 1) {
 
-		if(guess > floors) {
+		if(guess > floors) { //checks if guess is bigger then given floors
 			printf("Limit is to great\n");
 			limit = 1;
 			break;
 		}
 
 		egg_drop_from_floor(carton[eggs - 1], guess);
-		step = guess - last_good_floor;
-		if(step < 2) {
+		step = guess - last_good_floor; //set the step to be currently correct
+		if(step < 2) { //makes sure i at least step by 2
 			step = 2;
 		}
 
 		if(egg_is_broken(carton[eggs - 1])) {
 			printf("EGG CRACKED at floor %ld\n", guess);
 			eggs--;
-			size_t tmp = last_good_floor + (step/2);
+			size_t tmp = last_good_floor + (step/2); //sets up a tmp value to check guess against
 
-			if(tmp == guess) {
+			if(tmp == guess) { //checks to see if tmp was guess
 				printf("You passed your limit\n");
 				break;
 			}
-			else {
+			else { //if no the set guess equal to tmp
 				guess = tmp;
 			}
 
@@ -206,7 +204,7 @@ bool binary_search(double floors, int eggs, egg **carton)
 		else {
 			printf("EGG SURVIVED at floor %ld\n", guess);
 			last_good_floor = guess;
-			guess = guess + (step/2);
+			guess = guess + (step/2); //set guess equal to guess plus half of that guess
 		}
 
 		total_count++;
